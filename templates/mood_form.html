@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🧠 MAITRI Mood Check-In</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        font-family: "Poppins", sans-serif;
+        background: radial-gradient(circle at center, #050b10, #000);
+        color: #e0f7fa;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+
+      .container {
+        position: relative;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(14px);
+        padding: 40px;
+        border-radius: 25px;
+        box-shadow: 0 0 40px rgba(0, 255, 200, 0.15);
+        width: 900px;
+        max-height: 90vh;
+        display: flex;
+        gap: 30px;
+        z-index: 1;
+      }
+
+      h2 {
+        color: #00ffe1;
+        letter-spacing: 1px;
+        margin-bottom: 20px;
+      }
+
+      /* ✨ Form styling */
+      .form-container {
+        flex: 1;
+      }
+
+      .form-container form label {
+        display: block;
+        margin: 15px 0 6px;
+        text-align: left;
+        color: #a3f0df;
+        font-weight: 500;
+      }
+
+      .form-container form select,
+      .form-container form input[type="range"],
+      .form-container form textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: none;
+        background-color: #050b10; /* dark background matching theme */
+        color: #00ffe1; /* text bright cyan for visibility */
+        font-size: 1rem; /* consistent font size */
+        outline: none;
+        box-shadow: 0 0 10px rgba(0, 255, 200, 0.1);
+      }
+
+      .form-container form textarea {
+        resize: none;
+      }
+
+      .slider-value {
+        text-align: right;
+        margin-top: 4px;
+        color: #00ffe1;
+        font-weight: 500;
+      }
+
+      button[type="submit"] {
+        margin-top: 20px;
+        padding: 14px 24px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        background: linear-gradient(90deg, #00ffe1, #00bfa6);
+        color: #000;
+        transition: 0.3s;
+      }
+
+      button:hover {
+        transform: scale(1.05);
+        background: linear-gradient(90deg, #00bfa6, #00ffe1);
+      }
+
+      /* ✨ Output styling */
+      .output-container {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.08);
+        padding: 20px;
+        border-radius: 15px;
+        font-size: 1rem; /* consistent font */
+        color: #c7f8f5;
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+        text-shadow: 0 0 8px #00ffe1;
+        max-height: 600px;
+        overflow-y: auto;
+      }
+
+      .typing {
+        display: inline-block;
+        border-right: 2px solid #00ffe1;
+        white-space: nowrap;
+        overflow: hidden;
+        animation: typing 2.5s steps(40, end), blink 0.75s step-end infinite;
+      }
+
+      @keyframes typing {
+        from {
+          width: 0;
+        }
+        to {
+          width: 100%;
+        }
+      }
+      @keyframes blink {
+        50% {
+          border-color: transparent;
+        }
+      }
+
+      /* 🌟 Floating particles */
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(0, 255, 200, 0.6);
+        animation: float 8s linear infinite;
+        opacity: 0.6;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0) translateX(0);
+          opacity: 0.6;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-100vh) translateX(50px);
+          opacity: 0;
+        }
+      }
+
+      @media screen and (max-width: 1000px) {
+        .container {
+          flex-direction: column;
+          width: 90%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="particles"></div>
+
+    <div class="container">
+      <div class="form-container">
+        <h2>🧠 MAITRI Mood Check-In</h2>
+        <form id="moodForm" method="post" action="/api/chat">
+          <label for="mood">How are you feeling?</label>
+          <select id="mood" name="mood" required>
+            <option value="">Select Mood</option>
+            <option value="happy">😊 Happy</option>
+            <option value="neutral">😐 Neutral</option>
+            <option value="sad">😢 Sad</option>
+            <option value="anxious">😟 Anxious</option>
+            <option value="angry">😠 Angry</option>
+          </select>
+
+          <label for="intensity">Intensity (1–10)</label>
+          <input
+            type="range"
+            id="intensity"
+            name="intensity"
+            min="1"
+            max="10"
+            value="5"
+          />
+          <div class="slider-value" id="sliderValue">5</div>
+
+          <label for="duration">How long have you been feeling this way?</label>
+          <select id="duration" name="duration" required>
+            <option value="">Select Duration</option>
+            <option value="today">Just today</option>
+            <option value="few_days">A few days</option>
+            <option value="few_weeks">A few weeks</option>
+            <option value="more_than_month">More than a month</option>
+          </select>
+
+          <label for="sleep">How has your sleep been recently?</label>
+          <select id="sleep" name="sleepQuality" required>
+            <option value="">Select Sleep Quality</option>
+            <option value="good">Good 😊</option>
+            <option value="average">Average 😐</option>
+            <option value="poor">Poor 😴</option>
+          </select>
+
+          <label for="message">Tell me more</label>
+          <textarea
+            id="message"
+            name="message"
+            rows="4"
+            placeholder="What's on your mind?"
+            required
+          ></textarea>
+
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+
+      <div class="output-container" id="output"></div>
+    </div>
+
+    <script>
+      // 🌟 Particle generator
+      const particleContainer = document.getElementById("particles");
+      for (let i = 0; i < 30; i++) {
+        const p = document.createElement("div");
+        p.className = "particle";
+        p.style.width = p.style.height = Math.random() * 6 + 2 + "px";
+        p.style.left = Math.random() * 100 + "%";
+        p.style.top = Math.random() * 100 + "%";
+        p.style.animationDuration = 5 + Math.random() * 10 + "s";
+        particleContainer.appendChild(p);
+      }
+
+      // 🌟 Slider value update
+      const slider = document.getElementById("intensity");
+      const sliderVal = document.getElementById("sliderValue");
+      slider.addEventListener("input", () => {
+        sliderVal.textContent = slider.value;
+      });
+
+      // 🌟 Form submit with typing animation
+      const form = document.getElementById("moodForm");
+      const outputDiv = document.getElementById("output");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        outputDiv.innerHTML =
+          "<span class='typing'>MAITRI is analyzing your mood...</span>";
+
+        const formData = new FormData(form);
+        try {
+          const res = await fetch("/api/chat", {
+            method: "POST",
+            body: formData,
+          });
+          const data = await res.json();
+
+          let cleaned = data.result || JSON.stringify(data, null, 2);
+          try {
+            cleaned = JSON.parse(cleaned);
+            cleaned = `Analysis: ${cleaned.analysis}\n\nMAITRI: ${cleaned.maitri_reply}\n\nSuggestion: ${cleaned.suggestion}`;
+          } catch (e) {}
+
+          // Typing animation effect
+          outputDiv.innerHTML = "";
+          let i = 0;
+          const typingText = cleaned;
+          const interval = setInterval(() => {
+            outputDiv.innerHTML += typingText.charAt(i);
+            i++;
+            if (i >= typingText.length) clearInterval(interval);
+          }, 15); // speed of typing
+        } catch (err) {
+          outputDiv.innerHTML =
+            "<pre style='color:#ff4d6d;'>❌ Error connecting to MAITRI. Try again.</pre>";
+        }
+      });
+    </script>
+  </body>
+</html>

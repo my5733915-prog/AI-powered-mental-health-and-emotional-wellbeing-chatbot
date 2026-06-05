@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MAITRI - Facial Emotion Detection</title>
+
+    <!-- Fonts & Icons -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: radial-gradient(circle at 20% 20%, #0a0f1f, #05070e);
+        color: #e0f7ff;
+        overflow: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: repeating-radial-gradient(
+          circle,
+          rgba(0, 255, 255, 0.05) 0,
+          rgba(0, 255, 255, 0.05) 2px,
+          transparent 3px,
+          transparent 100px
+        );
+        animation: pulse 6s infinite alternate;
+        z-index: 0;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 0.4;
+        }
+        100% {
+          transform: scale(1.1);
+          opacity: 0.7;
+        }
+      }
+
+      .container {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        text-align: center;
+      }
+
+      h1 {
+        font-family: "Orbitron", sans-serif;
+        font-size: 2.6rem;
+        color: #00ffe1;
+        text-shadow: 0 0 20px #00ffff;
+        margin-bottom: 1rem;
+        letter-spacing: 2px;
+        animation: glowPulse 3s infinite alternate;
+      }
+
+      @keyframes glowPulse {
+        from {
+          text-shadow: 0 0 10px #00ffff;
+        }
+        to {
+          text-shadow: 0 0 25px #00ffff, 0 0 40px #00ffff;
+        }
+      }
+
+      #camera {
+        width: 380px;
+        height: 280px;
+        border: 2px solid rgba(0, 255, 255, 0.3);
+        border-radius: 16px;
+        box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+        object-fit: cover;
+        backdrop-filter: blur(10px);
+        animation: float 4s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+        100% {
+          transform: translateY(0);
+        }
+      }
+
+      #captureBtn {
+        margin-top: 2rem;
+        padding: 14px 40px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #0ff;
+        background: rgba(0, 0, 0, 0.6);
+        border: 1px solid rgba(0, 255, 255, 0.6);
+        border-radius: 40px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        backdrop-filter: blur(8px);
+      }
+
+      #captureBtn:hover {
+        background: rgba(0, 255, 255, 0.15);
+        box-shadow: 0 0 20px #00ffff;
+        transform: scale(1.05);
+      }
+
+      .scan-line {
+        position: absolute;
+        width: 380px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #00ffff, transparent);
+        animation: scan 3s linear infinite;
+        top: calc(50% - 140px);
+        border-radius: 2px;
+      }
+
+      @keyframes scan {
+        0% {
+          transform: translateY(0);
+          opacity: 0.6;
+        }
+        50% {
+          transform: translateY(280px);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(0);
+          opacity: 0.6;
+        }
+      }
+
+      #result {
+        margin-top: 2rem;
+        max-width: 500px;
+        min-height: 80px;
+        font-size: 1.2rem;
+        color: #fff;
+        text-shadow: 0 0 10px #00ffff;
+        animation: fadeIn 1s ease forwards;
+      }
+
+      #emotion {
+        font-size: 1.4rem;
+        color: #00ffff;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+      }
+
+      #ai-message {
+        font-size: 1rem;
+        color: #c2f8ff;
+        line-height: 1.5;
+        opacity: 0;
+        animation: fadeInText 2s ease forwards;
+      }
+
+      @keyframes fadeInText {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      #loader {
+        display: none;
+        margin-top: 20px;
+        font-size: 1rem;
+        color: #00ffff;
+      }
+
+      .dots::after {
+        content: "...";
+        animation: dots 1.5s steps(3, end) infinite;
+      }
+
+      @keyframes dots {
+        0%,
+        20% {
+          color: rgba(0, 255, 255, 0);
+          text-shadow: none;
+        }
+        40% {
+          color: #00ffff;
+          text-shadow: 0 0 10px #00ffff;
+        }
+        60% {
+          color: #00ffff;
+        }
+        100% {
+          color: rgba(0, 255, 255, 0);
+        }
+      }
+
+      footer {
+        margin-top: 30px;
+        font-size: 0.9rem;
+        color: #7efcff;
+        opacity: 0.6;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1><i class="fa-solid fa-robot"></i> MAITRI</h1>
+      <h3>AI-Powered Facial Emotion Detection</h3>
+      <br /><br />
+      <div style="position: relative">
+        <video id="camera" autoplay></video>
+        <div class="scan-line"></div>
+      </div>
+
+      <button id="captureBtn">
+        <i class="fa-solid fa-bolt"></i> Capture & Detect
+      </button>
+
+      <div id="loader">Analyzing emotion<span class="dots"></span></div>
+
+      <div id="result">
+        <div id="emotion"></div>
+        <div id="ai-message"></div>
+      </div>
+
+      <footer>MAITRI © 2025 | Emotion Intelligence Interface</footer>
+    </div>
+
+    <script>
+      const video = document.getElementById("camera");
+      const resultDiv = document.getElementById("result");
+      const emotionText = document.getElementById("emotion");
+      const aiMessage = document.getElementById("ai-message");
+      const loader = document.getElementById("loader");
+
+      // ✅ Start Camera
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((stream) => (video.srcObject = stream))
+        .catch((err) => console.error("Camera access denied:", err));
+
+      // ✅ Capture & Send Image
+      document
+        .getElementById("captureBtn")
+        .addEventListener("click", async () => {
+          loader.style.display = "block";
+          emotionText.textContent = "";
+          aiMessage.textContent = "";
+
+          const canvas = document.createElement("canvas");
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(video, 0, 0);
+
+          const imageData = canvas.toDataURL("image/jpeg");
+
+          try {
+            const response = await fetch("/predict", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ image: imageData }),
+            });
+
+            const data = await response.json();
+            loader.style.display = "none";
+
+            if (data.error) {
+              emotionText.textContent = "⚠️ " + data.error;
+              aiMessage.textContent = data.message || "";
+              return;
+            }
+
+            emotionText.textContent = `Emotion Detected: ${data.emotion} (${(
+              data.confidence * 100
+            ).toFixed(1)}%)`;
+
+            typeText(aiMessage, data.message || "Stay positive 💙");
+          } catch (err) {
+            loader.style.display = "none";
+            emotionText.textContent = "Error processing image.";
+            console.error(err);
+          }
+        });
+
+      // ✨ Typing Effect for AI Message
+      function typeText(element, text) {
+        element.style.opacity = 1;
+        element.textContent = "";
+        let i = 0;
+        const typing = setInterval(() => {
+          element.textContent += text.charAt(i);
+          i++;
+          if (i >= text.length) clearInterval(typing);
+        }, 40);
+      }
+    </script>
+  </body>
+</html>

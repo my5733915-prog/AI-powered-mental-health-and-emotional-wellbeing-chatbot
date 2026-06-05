@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MAITRI — Emotional Intelligence Interface</title>
+
+    <!-- Fonts & Icons -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: radial-gradient(circle at 20% 20%, #05070e, #0a0f1f, #000);
+        color: #e0f7ff;
+        overflow: hidden;
+        height: 100vh;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: repeating-radial-gradient(
+          circle,
+          rgba(0, 255, 255, 0.04) 0,
+          rgba(0, 255, 255, 0.04) 2px,
+          transparent 3px,
+          transparent 100px
+        );
+        animation: pulse 8s infinite alternate;
+        z-index: 0;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 0.4;
+          transform: scale(1);
+        }
+        100% {
+          opacity: 0.7;
+          transform: scale(1.1);
+        }
+      }
+
+      .container {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        text-align: center;
+        padding: 20px;
+      }
+
+      h1 {
+        font-family: "Orbitron", sans-serif;
+        font-size: 3rem;
+        color: #00ffe1;
+        text-shadow: 0 0 25px #00ffff;
+        letter-spacing: 2px;
+        margin-bottom: 1rem;
+        animation: glowPulse 3s infinite alternate;
+      }
+
+      @keyframes glowPulse {
+        from {
+          text-shadow: 0 0 10px #00ffff;
+        }
+        to {
+          text-shadow: 0 0 35px #00ffff, 0 0 60px #00ffff;
+        }
+      }
+
+      h3 {
+        font-weight: 400;
+        color: #b8faff;
+        margin-bottom: 60px;
+        letter-spacing: 1px;
+      }
+
+      .modules {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px;
+        justify-content: center;
+      }
+
+      .card {
+        position: relative;
+        width: 280px;
+        height: 220px;
+        background: rgba(0, 255, 255, 0.05);
+        border: 1px solid rgba(0, 255, 255, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 0 25px rgba(0, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: #00ffff;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.4s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-10px) scale(1.05);
+        box-shadow: 0 0 35px rgba(0, 255, 255, 0.4);
+        background: rgba(0, 255, 255, 0.1);
+      }
+
+      .card i {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        color: #00ffe1;
+        text-shadow: 0 0 15px #00ffff;
+      }
+
+      .card h4 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #e0f7ff;
+      }
+
+      footer {
+        position: absolute;
+        bottom: 20px;
+        font-size: 0.9rem;
+        color: #7efcff;
+        opacity: 0.6;
+      }
+
+      /* Floating orb animation */
+      .orb {
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #00ffff33 0%, transparent 70%);
+        box-shadow: 0 0 60px 10px #00ffff33;
+        top: 20%;
+        left: 15%;
+        animation: floatOrb 6s ease-in-out infinite;
+      }
+
+      @keyframes floatOrb {
+        0% {
+          transform: translate(0, 0);
+        }
+        50% {
+          transform: translate(30px, 20px);
+        }
+        100% {
+          transform: translate(0, 0);
+        }
+      }
+
+      .orb2 {
+        width: 120px;
+        height: 120px;
+        top: 70%;
+        left: 70%;
+        animation-delay: 2s;
+      }
+
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2.2rem;
+        }
+        .card {
+          width: 85%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="orb"></div>
+    <div class="orb orb2"></div>
+
+    <div class="container">
+      <h1><i class="fa-solid fa-robot"></i> MAITRI</h1>
+      <h3>Emotional Intelligence Interface</h3>
+
+      <div class="modules">
+        <div class="card" onclick="location.href='/face'">
+          <i class="fa-solid fa-face-smile"></i>
+          <h4>Facial Emotion Detection</h4>
+        </div>
+
+        <div class="card" onclick="location.href='/voice'">
+          <i class="fa-solid fa-microphone"></i>
+          <h4>Voice Emotion Analysis</h4>
+        </div>
+
+        <div class="card" onclick="location.href='/chat'">
+          <i class="fa-solid fa-comments"></i>
+          <h4>Chat with MAITRI</h4>
+        </div>
+      </div>
+
+      <footer>MAITRI © 2025 | AI for Emotional Well-Being</footer>
+    </div>
+  </body>
+</html>
